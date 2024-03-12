@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace Library
 {
-    class Library
+   public class Library
     {
-        static Library? lib = null;
+        static Library lib;
         List<Worker> Workers = new List<Worker>();
         List<Book> Books = new List<Book>();
         private Library()
         {
-            Workers.Add(new Admin("Default"));
+            
         }
         public static Library GetInstance()
         {
@@ -38,7 +38,7 @@ namespace Library
         }
         public void AddBook(Worker w, Book book)
         {
-            if (book != null)
+            if (WorksAtLib(w) &&book != null)
             {
                 Books.Add(book);
                 MessageHandler.SuccessMsg($"Book Added by {w.Name}");
@@ -73,18 +73,18 @@ namespace Library
         }
         public void AddWorker(Manager adder, Worker worker)
         {
-            if (worker != null && adder != null)
+            if (adder!=null && worker!=null && WorksAtLib(adder))
             {
                 Workers.Add(worker);
                 MessageHandler.SuccessMsg($"Worker {worker.Name}" +
                     $"added successfully by {adder.Name}");
             }
             else
-                MessageHandler.FailureMsg("Failiure to add worker");
+                MessageHandler.FailureMsg("Failiure to add worker either the adder or the worker are null \nor theadder does not work at lib");
         }
         public void RemoveWorker(Admin remover, Worker worker)
         {
-            if (worker != null && remover != null)
+            if ((worker != null && remover != null) && (WorksAtLib(remover) && WorksAtLib(worker)))
             {
                 Workers.Remove(worker);
                 MessageHandler.SuccessMsg($"Worker {worker.Name}" +
@@ -103,24 +103,26 @@ namespace Library
                 case '1':
                     if (worker != null && worker is not Manager && worker is not Admin)
                     {
-                        Manager a = new Manager(worker.Name);
+                        Manager a = new Manager(worker.Name, worker.UserName,worker.Password);
                         Workers.Remove(worker);
                         Workers.Add(a);
                         MessageHandler.SuccessMsg($"Worker {worker.Name}" +
-                    $"promoted to manager successfully by {admin.Name}");
+                        $"promoted to manager successfully by {admin.Name}");
                     }
 
                     break;
                 case '2':
                     if (worker != null && worker is not Manager && worker is not Admin)
                     {
-                        Admin a = new Admin(worker.Name);
+                        Admin a = new Admin(worker.Name, worker.UserName, worker.Password);
+                        Workers.Remove(worker);
+                        Workers.Add(a);
                         MessageHandler.SuccessMsg($"Worker {worker.Name}" +
                     $"promoted to admin successfully by {admin.Name}");
                     }
                     break;
                 default:
-                    MessageHandler.FailureMsg("Wrong charecter pressed");
+                    MessageHandler.FailureMsg("Wrong charecter pressed/ null admin or worker");
                     break;
 
 
@@ -140,13 +142,24 @@ namespace Library
 
             if (bothWorkAtLib && worker is Admin)
             {
-                Manager m = worker as Manager;
-                Workers.Remove(worker);
-                Workers.Add(m);
+                
+                if (worker != null)
+                {
+                    Manager m = new(worker.Name,worker.UserName,worker.Password);
+                    Workers.Add(m);
+                    Workers.Remove(worker);
+                }
+                else
+                {
+                    MessageHandler.FailureMsg("Manager object is null exiting program Library.cs Line:154");
+                    return ;
+                }
+               
+                
             }
             else if (bothWorkAtLib && worker is Manager)
             {
-                Worker w = worker as Worker;
+                Worker w = new(worker.Name,worker.UserName,worker.Password);
                 Workers.Remove(worker);
                 Workers.Add(w);
             }

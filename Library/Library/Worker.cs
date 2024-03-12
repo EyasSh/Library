@@ -10,7 +10,9 @@ namespace Library
     {
         private Guid _id;
         private string name;
-        Library l = Library.GetInstance();
+        private string userName;
+        private string password;
+       protected Library l = Library.GetInstance();
         #region Props
         public Guid Id { get; }
         public string Name
@@ -28,11 +30,15 @@ namespace Library
                 }
             } 
         }
+        public string UserName { get; set; }
+        public string Password { get; set; }
         #endregion
-        public Worker(string Name)
+        public Worker(string Name, string userName, string password)
         {
             this.Name = Name;
             _id = Guid.NewGuid();
+            UserName = userName;
+            Password = password;
         }
         public void AddBook(Book book)
         {
@@ -48,17 +54,32 @@ namespace Library
     }
     public class Manager : Worker
     {
-        public Manager(string Name):base(Name)
+        public Manager(string Name, string userName, string password):base(Name, userName,password)
         {
-
+        }
+        public void Hire(Worker w)
+        {
+            this.l.AddWorker(this, w);
         }
       
     }
     public sealed class Admin : Manager
     {
-        public Admin(string Name):base(Name)
+        public Admin(string Name,string username,string password):base(Name,username,password)
         {
 
+        }
+        public void Promote(Worker w)
+        {
+            l.PromoteWorker(this, w);
+        }
+        public void Demote(Worker w)
+        {
+            l.DemoteWorker(this, w);
+        }
+        public void Fire(Worker w)
+        {
+            l.RemoveWorker(this, w);
         }
     }
 }
