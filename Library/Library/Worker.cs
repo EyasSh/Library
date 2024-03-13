@@ -12,7 +12,7 @@ namespace Library
         private string name;
         private string userName;
         private string password;
-       protected Library l = Library.GetInstance();
+       
         #region Props
         public Guid Id { get; }
         public string Name
@@ -40,15 +40,15 @@ namespace Library
             UserName = userName;
             Password = password;
         }
-        public void AddBook(Book book)
+        public void AddBook(Library lib,Book book)
         {
-            if (l.WorksAtLib(this))
-                l.AddBook(this, book);
+            if (lib is not null && lib.WorksAtLib(this))
+                lib.AddBook(this, book);
         }
-        public void RemoveBook(Book book)
+        public void RemoveBook(Library lib, Book book)
         {
-            if (l.WorksAtLib(this))
-                l.RemoveBook(this, book);
+            if (lib.WorksAtLib(this))
+                lib.RemoveBook(this, book);
         }
            
     }
@@ -57,9 +57,9 @@ namespace Library
         public Manager(string Name, string userName, string password):base(Name, userName,password)
         {
         }
-        public void Hire(Worker w)
+        public void Hire(Library l,Worker w)
         {
-            this.l.AddWorker(this, w);
+            l.AddWorker(this, w);
         }
       
     }
@@ -69,15 +69,15 @@ namespace Library
         {
 
         }
-        public void Promote(Worker w)
+        public void Promote(Library l,Worker w)
         {
             l.PromoteWorker(this, w);
         }
-        public void Demote(Worker w)
+        public void Demote(Library l,Worker w)
         {
             l.DemoteWorker(this, w);
         }
-        public void Fire(Worker w)
+        public void Fire(Library l, Worker w)
         {
             l.RemoveWorker(this, w);
         }

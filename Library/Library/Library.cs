@@ -8,25 +8,30 @@ namespace Library
 {
    public class Library
     {
-        static Library lib;
-        List<Worker> Workers = new List<Worker>();
-        List<Book> Books = new List<Book>();
-        private Library()
+        private static Library lib;
+        List<Worker> workers = new List<Worker>();
+        List<Book> books = new List<Book>();
+        
+        private Library(Admin a)
         {
-            
+            workers.Add(a);
         }
         public static Library GetInstance()
         {
+
             if (lib == null)
             {
-                lib = new Library();
+                Admin a = new("John Doe", "JD","Dlay");
+                Console.WriteLine(a==null);
+                lib = new Library(a);
+                Console.WriteLine("Admin added");
                 return lib;
             }
             return lib;
         }
         public bool WorksAtLib(Worker worker)
         {
-            foreach (Worker w in Workers)
+            foreach (Worker w in workers)
             {
                 if (w.Id.ToString() == worker.Id.ToString())
                 {
@@ -40,7 +45,7 @@ namespace Library
         {
             if (WorksAtLib(w) &&book != null)
             {
-                Books.Add(book);
+               books.Add(book);
                 MessageHandler.SuccessMsg($"Book Added by {w.Name}");
             }
             else
@@ -61,7 +66,7 @@ namespace Library
             {
                 try
                 {
-                    Books.Remove(book);
+                    books.Remove(book);
                     MessageHandler.SuccessMsg($"{book.Name} removed by {worker.Name}");
                 }
                 catch (Exception e)
@@ -75,7 +80,7 @@ namespace Library
         {
             if (adder!=null && worker!=null && WorksAtLib(adder))
             {
-                Workers.Add(worker);
+                workers.Add(worker);
                 MessageHandler.SuccessMsg($"Worker {worker.Name}" +
                     $"added successfully by {adder.Name}");
             }
@@ -86,7 +91,7 @@ namespace Library
         {
             if ((worker != null && remover != null) && (WorksAtLib(remover) && WorksAtLib(worker)))
             {
-                Workers.Remove(worker);
+                workers.Remove(worker);
                 MessageHandler.SuccessMsg($"Worker {worker.Name}" +
                     $"added successfully by {remover.Name}");
             }
@@ -104,8 +109,8 @@ namespace Library
                     if (worker != null && worker is not Manager && worker is not Admin)
                     {
                         Manager a = new Manager(worker.Name, worker.UserName,worker.Password);
-                        Workers.Remove(worker);
-                        Workers.Add(a);
+                        workers.Remove(worker);
+                        workers.Add(a);
                         MessageHandler.SuccessMsg($"Worker {worker.Name}" +
                         $"promoted to manager successfully by {admin.Name}");
                     }
@@ -115,8 +120,8 @@ namespace Library
                     if (worker != null && worker is not Manager && worker is not Admin)
                     {
                         Admin a = new Admin(worker.Name, worker.UserName, worker.Password);
-                        Workers.Remove(worker);
-                        Workers.Add(a);
+                        workers.Remove(worker);
+                        workers.Add(a);
                         MessageHandler.SuccessMsg($"Worker {worker.Name}" +
                     $"promoted to admin successfully by {admin.Name}");
                     }
@@ -146,8 +151,8 @@ namespace Library
                 if (worker != null)
                 {
                     Manager m = new(worker.Name,worker.UserName,worker.Password);
-                    Workers.Add(m);
-                    Workers.Remove(worker);
+                    workers.Add(m);
+                    workers.Remove(worker);
                 }
                 else
                 {
@@ -160,8 +165,8 @@ namespace Library
             else if (bothWorkAtLib && worker is Manager)
             {
                 Worker w = new(worker.Name,worker.UserName,worker.Password);
-                Workers.Remove(worker);
-                Workers.Add(w);
+                workers.Remove(worker);
+                workers.Add(w);
             }
             else
             {
